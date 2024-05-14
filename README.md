@@ -62,4 +62,65 @@ pip install -U notebook
 jupyter-notebook
 ```
 
-And `local_chatbot.ipynb` can be used to query the model through the SSH tunnel!
+And `local_chatbot.ipynb` can be used to query the model on your desktop through the SSH tunnel!
+
+### Options to try
+TGI's `text-generation-launcher` has many options, you can explore `text-generation-launcher --help`
+
+Example of options to try **from the server** (arguments to specifiy to `text-generation-launcher`):
+* `--quantize gptq` for [quantized models](https://huggingface.co/docs/text-generation-inference/conceptual/quantization) (beware: needs to use a GPTQ model (e.g. one from https://hf.co/models?search=gptq, for example `TechxGenus/Meta-Llama-3-70B-Instruct-GPTQ`)
+* `--dtype bfloat16`
+* `--num-shard X`: how many GPUs to use to deploy the model, using [tensor parallelism](https://huggingface.co/docs/text-generation-inference/conceptual/tensor_parallelism)? (here only `--num-shard 1` as one user has only one GPU)
+* `--speculate`: use [speculative decoding](https://huggingface.co/docs/text-generation-inference/conceptual/speculation). This argument specifies the number of input_ids to speculate on if using a medusa model, or using n-gram speculation
+* `--cuda-graphs 1,2,3,4`: customize the batch sizes to capture cuda graphs for
+* `--cuda-memory-fraction`: Limit the CUDA available memory. Useful to host several models on a single GPU (TGI otherwise reserves all the available memory).
+* Vision-Language models: https://huggingface.co/docs/text-generation-inference/basic_tutorials/visual_language_models#inference-through-sending-curl-requests
+
+Example of options to try **from the client**:
+* [Grammar contrained generation](https://huggingface.co/docs/text-generation-inference/basic_tutorials/using_guidance#guidance): e.g. to contraint the generation to a specific format (JSON). Reference: [Guidance conceptual guide](https://huggingface.co/docs/text-generation-inference/conceptual/guidance).
+
+```
+curl localhost:3000/generate \
+    -X POST \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "inputs": "I saw a puppy a cat and a raccoon during my bike ride in the park",
+    "parameters": {
+        "repetition_penalty": 1.3,
+        "grammar": {
+            "type": "json",
+            "value": {
+                "properties": {
+                    "location": {
+                        "type": "string"
+                    },
+                    "activity": {
+                        "type": "string"
+                    },
+                    "animals_seen": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 5
+                    },
+                    "animals": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": ["location", "activity", "animals_seen", "animals"]
+            }
+        }
+    }
+}'
+```
+
+
+
+## Model fine-tuning
+
+Please run:
+```
+accelerate run test_peft.py
+```
