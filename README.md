@@ -117,6 +117,7 @@ or with Medusa:
 (see its config: https://huggingface.co/text-generation-inference/Mistral-7B-Instruct-v0.2-medusa/blob/main/config.json)
 
 Read more at: https://huggingface.co/docs/text-generation-inference/conceptual/speculation
+
 Medusa implementation: https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/layers/medusa.py
 
 ## Customize HIP Graph, TunableOp warmup
@@ -193,6 +194,63 @@ Example:
 ```
 text-generation-benchmark --tokenizer-name meta-llama/Meta-Llama-3-8B-Instruct --sequence-length 2048 --decode-length 128 --warmups 2 --runs 10 -b 1 -b 2 -b 4 -b 8 -b 16 -b 32 -b 64
 ```
+
+`text-generation-benchmark` can give results tables as:
+
+| Parameter          | Value                                |
+|--------------------|--------------------------------------|
+| Model              | meta-llama/Meta-Llama-3-70B-Instruct |
+| Sequence Length    | 2048                                 |
+| Decode Length      | 128                                  |
+| Top N Tokens       | None                                 |
+| N Runs             | 10                                   |
+| Warmups            | 2                                    |
+| Temperature        | None                                 |
+| Top K              | None                                 |
+| Top P              | None                                 |
+| Typical P          | None                                 |
+| Repetition Penalty | None                                 |
+| Frequency Penalty  | None                                 |
+| Watermark          | false                                |
+| Do Sample          | false                                |
+
+
+| Step           | Batch Size | Average    | Lowest     | Highest    | p50        | p90        | p99        |
+|----------------|------------|------------|------------|------------|------------|------------|------------|
+| Prefill        | 1          | 345.72 ms  | 342.55 ms  | 348.42 ms  | 345.88 ms  | 348.42 ms  | 348.42 ms  |
+|                | 2          | 455.36 ms  | 452.29 ms  | 458.80 ms  | 454.97 ms  | 458.80 ms  | 458.80 ms  |
+|                | 4          | 673.80 ms  | 666.73 ms  | 678.06 ms  | 675.55 ms  | 678.06 ms  | 678.06 ms  |
+|                | 8          | 1179.98 ms | 1176.53 ms | 1185.13 ms | 1180.36 ms | 1185.13 ms | 1185.13 ms |
+|                | 16         | 2046.73 ms | 2036.32 ms | 2061.69 ms | 2045.36 ms | 2061.69 ms | 2061.69 ms |
+|                | 32         | 4313.01 ms | 4273.01 ms | 4603.97 ms | 4282.30 ms | 4603.97 ms | 4603.97 ms |
+| Decode (token) | 1          | 12.38 ms   | 12.02 ms   | 15.06 ms   | 12.08 ms   | 12.12 ms   | 12.12 ms   |
+|                | 2          | 16.75 ms   | 16.02 ms   | 19.79 ms   | 16.06 ms   | 16.11 ms   | 16.11 ms   |
+|                | 4          | 17.57 ms   | 16.28 ms   | 19.94 ms   | 18.84 ms   | 16.34 ms   | 16.34 ms   |
+|                | 8          | 18.63 ms   | 16.75 ms   | 22.28 ms   | 19.55 ms   | 16.87 ms   | 16.87 ms   |
+|                | 16         | 21.83 ms   | 18.94 ms   | 25.53 ms   | 21.99 ms   | 21.98 ms   | 21.98 ms   |
+|                | 32         | 27.76 ms   | 24.49 ms   | 33.47 ms   | 27.84 ms   | 29.67 ms   | 29.67 ms   |
+| Decode (total) | 1          | 1571.76 ms | 1526.99 ms | 1912.55 ms | 1534.09 ms | 1538.85 ms | 1538.85 ms |
+|                | 2          | 2127.04 ms | 2034.91 ms | 2513.82 ms | 2039.47 ms | 2046.08 ms | 2046.08 ms |
+|                | 4          | 2231.84 ms | 2067.17 ms | 2532.21 ms | 2393.08 ms | 2074.70 ms | 2074.70 ms |
+|                | 8          | 2366.38 ms | 2127.92 ms | 2829.20 ms | 2483.24 ms | 2142.88 ms | 2142.88 ms |
+|                | 16         | 2772.09 ms | 2405.33 ms | 3242.91 ms | 2792.36 ms | 2791.81 ms | 2791.81 ms |
+|                | 32         | 3525.13 ms | 3110.67 ms | 4251.15 ms | 3535.48 ms | 3767.61 ms | 3767.61 ms |
+
+
+| Step    | Batch Size | Average             | Lowest             | Highest             |
+|---------|------------|---------------------|--------------------|---------------------|
+| Prefill | 1          | 2.89 tokens/secs    | 2.87 tokens/secs   | 2.92 tokens/secs    |
+|         | 2          | 4.39 tokens/secs    | 4.36 tokens/secs   | 4.42 tokens/secs    |
+|         | 4          | 5.94 tokens/secs    | 5.90 tokens/secs   | 6.00 tokens/secs    |
+|         | 8          | 6.78 tokens/secs    | 6.75 tokens/secs   | 6.80 tokens/secs    |
+|         | 16         | 7.82 tokens/secs    | 7.76 tokens/secs   | 7.86 tokens/secs    |
+|         | 32         | 7.42 tokens/secs    | 6.95 tokens/secs   | 7.49 tokens/secs    |
+| Decode  | 1          | 81.16 tokens/secs   | 66.40 tokens/secs  | 83.17 tokens/secs   |
+|         | 2          | 120.14 tokens/secs  | 101.04 tokens/secs | 124.82 tokens/secs  |
+|         | 4          | 229.31 tokens/secs  | 200.62 tokens/secs | 245.75 tokens/secs  |
+|         | 8          | 433.91 tokens/secs  | 359.11 tokens/secs | 477.46 tokens/secs  |
+|         | 16         | 743.16 tokens/secs  | 626.60 tokens/secs | 844.79 tokens/secs  |
+|         | 32         | 1164.14 tokens/secs | 955.98 tokens/secs | 1306.47 tokens/secs |
 
 # Model fine-tuning
 
