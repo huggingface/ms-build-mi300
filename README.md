@@ -112,7 +112,7 @@ Example, adding to the docker command:
 or with Medusa:
 
 ```
---model-id text-generation-inference/Mistral-7B-Instruct-v0.2-medusa  --speculate 3
+--model-id text-generation-inference/Mistral-7B-Instruct-v0.2-medusa --speculate 3
 ```
 (see its config: https://huggingface.co/text-generation-inference/Mistral-7B-Instruct-v0.2-medusa/blob/main/config.json)
 
