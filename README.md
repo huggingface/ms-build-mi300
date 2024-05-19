@@ -13,7 +13,7 @@ docker run --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
     --device=/dev/kfd --device=/dev/dri --group-add video --ipc=host --shm-size 256g \
     --net host -v $(pwd)/hf_cache:/data \
     ghcr.io/huggingface/text-generation-inference:sha-5dad0c0-rocm \
-    --model-id NousResearch/Meta-Llama-3-8B-Instruct \
+    --model-id meta-llama/Meta-Llama-3-8B-Instruct \
     --num-shard 1
 ```
 
@@ -66,9 +66,19 @@ jupyter-notebook
 And `local_chatbot.ipynb` can be used to query the model on your desktop through the SSH tunnel!
 
 # Options to try
+
 TGI's `text-generation-launcher` has many options, you can explore `text-generation-launcher --help`.
 
 TGI's documentation can also be used as a reference: https://huggingface.co/docs/text-generation-inference
+
+For the workshop, a few models have already been cached on the machines, and we recommend to use them:
+* `meta-llama/Meta-Llama-3-8B-Instruct`
+* `meta-llama/Meta-Llama-3-70B-Instruct`
+* `TheBloke/Llama-2-70B-Chat-GPTQ` (GPTQ model)
+* `casperhansen/llama-3-70b-instruct-awq` (AWQ model)
+* `mistralai/Mistral-7B-Instruct-v0.2`
+* `bigcode/starcoder2-15b-instruct-v0.1`
+* `text-generation-inference/Mistral-7B-Instruct-v0.2-medusa` (with Medusa speculative decoding)
 
 ## Quantization
 
@@ -99,12 +109,15 @@ Example, adding to the docker command:
 ```
 --model-id mistralai/Mistral-7B-Instruct-v0.2 --speculate 3
 ```
-or
+or with Medusa:
+
 ```
---model-id text-generation-inference/Mixtral-8x7B-Instruct-v0.1-medusa  --speculate
+--model-id text-generation-inference/Mistral-7B-Instruct-v0.2-medusa  --speculate 3
 ```
+(see its config: https://huggingface.co/text-generation-inference/Mistral-7B-Instruct-v0.2-medusa/blob/main/config.json)
 
 Read more at: https://huggingface.co/docs/text-generation-inference/conceptual/speculation
+Medusa implementation: https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/layers/medusa.py
 
 ## Customize HIP Graph, TunableOp warmup
 
@@ -167,7 +180,19 @@ curl localhost:3000/generate \
 }'
 ```
 
+## Benchmarking
 
+Text Generation Inference comes with its own benchmarking tool, `text-generation-benchmark`.
+
+Usage: `text-generation-benchmark --help`
+
+Example:
+1. Launch a container with `--model-id meta-llama/Meta-Llama-3-8B-Instruct`
+2. Open an other terminal in the container (`docker container ls` and then `docker exec -it container_name /bin/bash`
+3. Then, run for example:
+```
+text-generation-benchmark --tokenizer-name meta-llama/Meta-Llama-3-8B-Instruct --sequence-length 2048 --decode-length 128 --warmups 2 --runs 10 -b 1 -b 2 -b 4 -b 8 -b 16 -b 32 -b 64
+```
 
 # Model fine-tuning
 
