@@ -7,9 +7,9 @@
         [3. Speculative decoding](#speculative-decoding)
         [4. Customize HIP Graph, TunableOp warmup](#customize-hip-graph-tunableop-warmup)
         [5. Deploy several models on a single GPU](#deploy-several-models-on-a-single-gpu)
-        [6. Vision-Language models (VLM)](#vision-language-models-vlm)
-        [7. Grammar contrained generation](#grammar-contrained-generation)
-        [8. Benchmarking](#benchmarking)
+        [6. Grammar contrained generation](#grammar-contrained-generation)
+        [7. Benchmarking](#benchmarking)
+        [8. Vision-Language models (VLM)](#vision-language-models-vlm)
 [2. Model fine-tuning](#model-fine-tuning)
 
 # Deploying TGI on the VM
@@ -17,7 +17,7 @@
 Access to the VM as:
 
 ```
-ssh -L 8081:localhost:80 your_name@azure-mi300-vm
+ssh -L 8081:localhost:8081 your_name@azure-mi300-vm
 ```
 
 From within the VM, please run:
@@ -26,9 +26,10 @@ From within the VM, please run:
 docker run --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
     --device=/dev/kfd --device=/dev/dri --group-add video --ipc=host --shm-size 256g \
     --net host -v $(pwd)/hf_cache:/data \
+    -e HUGGING_FACE_HUB_TOKEN=$HF_READ_TOKEN \
     ghcr.io/huggingface/text-generation-inference:sha-5dad0c0-rocm \
     --model-id meta-llama/Meta-Llama-3-8B-Instruct \
-    --num-shard 1
+    --num-shard 1 --port 8081
 ```
 
 You should see a log as follow:
@@ -150,10 +151,6 @@ One can use the option `--cuda-memory-fraction` to limit the CUDA available memo
 
 This is useful to deploy several different models on a single GPU.
 
-## Vision-Language models (VLM)
-
-Refer to: https://huggingface.co/docs/text-generation-inference/basic_tutorials/visual_language_models
-
 ## Grammar contrained generation
 
 * [Grammar contrained generation](https://huggingface.co/docs/text-generation-inference/basic_tutorials/using_guidance#guidance): e.g. to contraint the generation to a specific format (JSON). Reference: [Guidance conceptual guide](https://huggingface.co/docs/text-generation-inference/conceptual/guidance).
@@ -265,6 +262,11 @@ text-generation-benchmark --tokenizer-name meta-llama/Meta-Llama-3-8B-Instruct -
 |         | 8          | 433.91 tokens/secs  | 359.11 tokens/secs | 477.46 tokens/secs  |
 |         | 16         | 743.16 tokens/secs  | 626.60 tokens/secs | 844.79 tokens/secs  |
 |         | 32         | 1164.14 tokens/secs | 955.98 tokens/secs | 1306.47 tokens/secs |
+
+## Vision-Language models (VLM)
+
+Refer to: https://huggingface.co/docs/text-generation-inference/basic_tutorials/visual_language_models
+
 
 # Model fine-tuning
 
