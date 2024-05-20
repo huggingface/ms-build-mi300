@@ -15,7 +15,7 @@
 # Deploying TGI on the VM
 
 Access the VM through SSH using any terminal application on your system.
- - IMPORTANT: Replace <placeholders> in the command according to printed setup instructions.
+ - IMPORTANT: Replace `<placeholders>` in the command according to printed setup instructions.
 ```
 ssh -L <300#>:localhost:<300#> -L <888#>:localhost:<888#> buildusere@<azure-vm-ip-address>
 ```
@@ -73,7 +73,7 @@ config.json [00:00:00] [██████████████████�
 2024-05-07T12:39:22.141577Z  WARN text_generation_router: router/src/main.rs:369: Invalid hostname, defaulting to 0.0.0.0
 ```
 After confirming output similar to above dettach from the Docker container using the follow escape key sequence:
-  - <Ctrl+p><Ctrl+q>
+  - `<Ctrl+p><Ctrl+q>`
   - That is, Control P followed directly by Control Q
 
 Now run another Docker container for Jupyter Notebook:
@@ -112,7 +112,7 @@ You should see output that ends with something similar to:
 
 Now `local_chatbot.ipynb` can be used to query the model from your system through the SSH tunnel!  To do so, direct your browser to:
   - Just copy and paste the provided URL into your browser (see ouput from Notebooks server)
-  - trhe format of the URL is as such: http://127.0.0.1:####/tree?token=<unique-value-from-output>
+  - trhe format of the URL is as such: `http://127.0.0.1:####/tree?token=<unique-value-from-output>`
 
 # Options to try
 
