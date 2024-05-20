@@ -1,7 +1,7 @@
 # Table of content
 
-[1. Deploying TGI on the VM](#headers)
-	[1. Options to try](#emphasis)
+[1. Deploying TGI on the VM](#deploying-tgi-on-the-vm)
+	[1. Options to try](#options-to-try)
         [1. Quantization](#quantization)
         [2. Tensor parallelism](#tensor-parallelism)
         [3. Speculative decoding](#speculative-decoding)
@@ -17,7 +17,7 @@
 Access to the VM as:
 
 ```
-ssh -L 8081:localhost:8081 your_name@azure-mi300-vm
+ssh -L 8081:localhost:80 your_name@azure-mi300-vm
 ```
 
 From within the VM, please run:
@@ -150,6 +150,10 @@ Several models can be deployed on a single GPU. By default TGI reserves all the 
 One can use the option `--cuda-memory-fraction` to limit the CUDA available memory used by TGI. Example: `--cuda-memory-fraction 0.5`
 
 This is useful to deploy several different models on a single GPU.
+
+## Vision-Language models (VLM)
+
+Refer to: https://huggingface.co/docs/text-generation-inference/basic_tutorials/visual_language_models
 
 ## Grammar contrained generation
 
