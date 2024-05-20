@@ -31,7 +31,6 @@ ssh \
 
 From within the VM, please use the following Docker run command while taking note to first set the following variables according to your printout:
   - For `--device=/dev/dri/renderD###` set `GPUID`
-  - For `--port ####` set `TGIPORT` (should be one of 3001, 3002, ..., 3008)
   - For `--name <your-name>_tgi` set `NAME` to help identify your Docker container
 ```
 GPUID=###
