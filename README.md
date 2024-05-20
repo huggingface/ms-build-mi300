@@ -28,51 +28,82 @@ From within the VM, please use the following Docker run command while taking not
 docker run --name <your-name>_tgi --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
     --device=/dev/kfd --device=/dev/dri/renderD### --group-add video --ipc=host --shm-size 256g \
     --net host -v $(pwd)/hf_cache:/data \
-    ghcr.io/huggingface/text-generation-inference:sha-5dad0c0-rocm \
-    --model-id meta-llama/Meta-Llama-3-8B-Instruct \
-    --num-shard 1 --port ####
+    --entrypoint "/bin/bash" \
+    ghcr.io/huggingface/text-generation-inference:sha-5dad0c0-rocm
 ```
+
+From within the container in interactive mode, make sure that you have one MI300 visible:
+```
+rocm-smi
+```
+
+giving
+```
+================================================== ROCm System Management Interface ==================================================
+============================================================ Concise Info ============================================================
+Device  Node  IDs              Temp        Power     Partitions          SCLK    MCLK    Fan  Perf              PwrCap  VRAM%  GPU%
+              (DID,     GUID)  (Junction)  (Socket)  (Mem, Compute, ID)
+======================================================================================================================================
+0       2     0x74b5,   23674  35.0°C      132.0W    NPS1, N/A, 0        132Mhz  900Mhz  0%   perf_determinism  750.0W  0%     0%
+======================================================================================================================================
+======================================================== End of ROCm SMI Log =========================================================
+```
+
+Then, from within the container in interactive mode, TGI can be launched with:
+```
+text-generation-launcher --model-id meta-llama/Meta-Llama-3-8B-Instruct --num-shard 1 --port ####
+```
+
+with **the port being the one indicated on your individual instruction sheet**.
 
 You should see a log as follow:
 ```
-config.json [00:00:00] [████████████████████████████████████████████████████████████████████████████████████████████████████████] 654 B/654 B 2.90 KiB/s (0s)2024-05-07T12:39:07.078362Z  INFO text_generation_launcher: Model supports up to 8192 but tgi will now set its default to 4096 instead. This is to save VRAM by refusing large prompts in order to allow more users on the same hardware. You can increase that size using `--max-batch-prefill-tokens=8242 --max-total-tokens=8192 --max-input-tokens=8191`.
-2024-05-07T12:39:07.078381Z  INFO text_generation_launcher: Default `max_input_tokens` to 4095
-2024-05-07T12:39:07.078387Z  INFO text_generation_launcher: Default `max_total_tokens` to 4096
-2024-05-07T12:39:07.078391Z  INFO text_generation_launcher: Default `max_batch_prefill_tokens` to 4145
-2024-05-07T12:39:07.078395Z  INFO text_generation_launcher: Sharding model on 2 processes
-2024-05-07T12:39:07.078529Z  INFO download: text_generation_launcher: Starting download process.
-2024-05-07T12:39:09.685072Z  INFO text_generation_launcher: Files are already present on the host. Skipping download.
+2024-05-20T17:32:40.790474Z  INFO text_generation_launcher: Default `max_input_tokens` to 4095
+2024-05-20T17:32:40.790512Z  INFO text_generation_launcher: Default `max_total_tokens` to 4096
+2024-05-20T17:32:40.790516Z  INFO text_generation_launcher: Default `max_batch_prefill_tokens` to 4145
+2024-05-20T17:32:40.790521Z  INFO text_generation_launcher: Using default cuda graphs [1, 2, 4, 8, 16, 32]
+2024-05-20T17:32:40.790658Z  INFO download: text_generation_launcher: Starting download process.
+2024-05-20T17:32:43.060786Z  INFO text_generation_launcher: Files are already present on the host. Skipping download.
 
-2024-05-07T12:39:10.282605Z  INFO download: text_generation_launcher: Successfully downloaded weights.
-2024-05-07T12:39:10.282975Z  INFO shard-manager: text_generation_launcher: Starting shard rank=0
-2024-05-07T12:39:10.283533Z  INFO shard-manager: text_generation_launcher: Starting shard rank=1
-2024-05-07T12:39:12.772701Z  INFO text_generation_launcher: ROCm: using Flash Attention 2 Composable Kernel implementation.
+2024-05-20T17:32:43.794782Z  INFO download: text_generation_launcher: Successfully downloaded weights.
+2024-05-20T17:32:43.795177Z  INFO shard-manager: text_generation_launcher: Starting shard rank=0
+2024-05-20T17:32:46.044820Z  INFO text_generation_launcher: ROCm: using Flash Attention 2 Composable Kernel implementation.
 
-2024-05-07T12:39:12.773025Z  INFO text_generation_launcher: ROCm: using Flash Attention 2 Composable Kernel implementation.
+2024-05-20T17:32:46.211469Z  WARN text_generation_launcher: Could not import Mamba: No module named 'mamba_ssm'
 
-2024-05-07T12:39:12.966280Z  WARN text_generation_launcher: Could not import Mamba: No module named 'mamba_ssm'
+2024-05-20T17:32:49.436913Z  INFO text_generation_launcher: Server started at unix:///tmp/text-generation-server-0
 
-2024-05-07T12:39:12.967123Z  WARN text_generation_launcher: Could not import Mamba: No module named 'mamba_ssm'
+2024-05-20T17:32:49.502406Z  INFO shard-manager: text_generation_launcher: Shard ready in 5.706223525s rank=0
+2024-05-20T17:32:49.600606Z  INFO text_generation_launcher: Starting Webserver
+2024-05-20T17:32:49.614745Z  INFO text_generation_router: router/src/main.rs:195: Using the Hugging Face API
+2024-05-20T17:32:49.614784Z  INFO hf_hub: /usr/local/cargo/registry/src/index.crates.io-6f17d22bba15001f/hf-hub-0.3.2/src/lib.rs:55: Token file not found "/root/.cache/huggingface/token"
+2024-05-20T17:32:49.871020Z  INFO text_generation_router: router/src/main.rs:474: Serving revision c4a54320a52ed5f88b7a2f84496903ea4ff07b45 of model meta-llama/Meta-Llama-3-8B-Instruct
+2024-05-20T17:32:50.068073Z  INFO text_generation_router: router/src/main.rs:289: Using config Some(Llama)
+2024-05-20T17:32:50.071589Z  INFO text_generation_router: router/src/main.rs:317: Warming up model
+2024-05-20T17:32:50.592906Z  INFO text_generation_launcher: PyTorch TunableOp (https://github.com/fxmarty/pytorch/tree/2.3-patched/aten/src/ATen/cuda/tunable) is enabled. The warmup may take several minutes, picking the ROCm optimal matrix multiplication kernel for the target lengths 1, 2, 4, 8, 16, 32, with typical 5-8% latency improvement for small sequence lengths. The picked GEMMs are saved in the file /data/tunableop_meta-llama-Meta-Llama-3-8B-Instruct_tp1_rank0.csv. To disable TunableOp, please launch TGI with `PYTORCH_TUNABLEOP_ENABLED=0`.
 
-2024-05-07T12:39:20.293016Z  INFO shard-manager: text_generation_launcher: Waiting for shard to be ready... rank=0
-2024-05-07T12:39:20.298136Z  INFO shard-manager: text_generation_launcher: Waiting for shard to be ready... rank=1
-2024-05-07T12:39:20.565722Z  INFO text_generation_launcher: Server started at unix:///tmp/text-generation-server-0
+2024-05-20T17:32:50.593041Z  INFO text_generation_launcher: The file /data/tunableop_meta-llama-Meta-Llama-3-8B-Instruct_tp1_rank0.csv already exists and will be reused.
 
-2024-05-07T12:39:20.593317Z  INFO shard-manager: text_generation_launcher: Shard ready in 10.308899699s rank=0
-2024-05-07T12:39:20.645430Z  INFO text_generation_launcher: Server started at unix:///tmp/text-generation-server-1
+2024-05-20T17:32:50.593225Z  INFO text_generation_launcher: Warming up TunableOp for seqlen=1
 
-2024-05-07T12:39:20.698556Z  INFO shard-manager: text_generation_launcher: Shard ready in 10.413843187s rank=1
-2024-05-07T12:39:20.796331Z  INFO text_generation_launcher: Starting Webserver
-2024-05-07T12:39:20.807178Z  INFO text_generation_router: router/src/main.rs:195: Using the Hugging Face API
-...
-2024-05-07T12:39:21.272761Z  INFO text_generation_router: router/src/main.rs:289: Using config Some(Llama)
-2024-05-07T12:39:21.272766Z  WARN text_generation_router: router/src/main.rs:298: no pipeline tag found for model meta-llama/Meta-Llama-3-8B-Instruct
-2024-05-07T12:39:21.278450Z  INFO text_generation_router: router/src/main.rs:317: Warming up model
-2024-05-07T12:39:22.141566Z  INFO text_generation_router: router/src/main.rs:354: Setting max batch total tokens to 801568
-2024-05-07T12:39:22.141574Z  INFO text_generation_router: router/src/main.rs:355: Connected
-2024-05-07T12:39:22.141577Z  WARN text_generation_router: router/src/main.rs:369: Invalid hostname, defaulting to 0.0.0.0
+2024-05-20T17:32:50.694955Z  INFO text_generation_launcher: Warming up TunableOp for seqlen=2
+
+2024-05-20T17:32:50.707031Z  INFO text_generation_launcher: Warming up TunableOp for seqlen=4
+
+2024-05-20T17:32:50.719015Z  INFO text_generation_launcher: Warming up TunableOp for seqlen=8
+
+2024-05-20T17:32:50.731009Z  INFO text_generation_launcher: Warming up TunableOp for seqlen=16
+
+2024-05-20T17:32:50.742969Z  INFO text_generation_launcher: Warming up TunableOp for seqlen=32
+
+2024-05-20T17:32:50.755226Z  INFO text_generation_launcher: Cuda Graphs are enabled for sizes [1, 2, 4, 8, 16, 32]
+
+2024-05-20T17:32:51.276651Z  INFO text_generation_router: router/src/main.rs:354: Setting max batch total tokens to 1346240
+2024-05-20T17:32:51.276675Z  INFO text_generation_router: router/src/main.rs:355: Connected
+2024-05-20T17:32:51.276679Z  WARN text_generation_router: router/src/main.rs:369: Invalid hostname, defaulting to 0.0.0.0
 ```
-After confirming output similar to above dettach from the Docker container using the follow escape key sequence:
+
+After confirming the output is similar to the above, dettach from the Docker container using the follow escape key sequence:
   - `<Ctrl+p><Ctrl+q>`
   - That is, Control P followed directly by Control Q
 
