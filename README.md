@@ -80,7 +80,7 @@ After confirming output similar to above dettach from the Docker container using
 Now run another Docker container for Jupyter Notebook:
   - Replace `<your-name>` in the command below with your name to help identify your Docker container.
 ```
-docker run -it -u root --rm --entrypoint /bin/bash --net host --name <your-name>_jnb jupyter/base-notebook
+docker run -it -u root --rm --entrypoint /bin/bash --net host --env HUGGING_FACE_HUB_TOKEN=$HF_READ_TOKEN --name <your-name>_jnb jupyter/base-notebook
 ```
 
 Once inside this 2nd Docker container clone the repo for this workshop
