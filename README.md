@@ -37,6 +37,7 @@ From within the VM, please use the following Docker run command while taking not
 docker run --name <your-name>_tgi --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
     --device=/dev/kfd --device=/dev/dri/renderD### --group-add video --ipc=host --shm-size 256g \
     --net host -v $(pwd)/hf/hf_cache:/data \
+    --entrypoint "/bin/bash" \
     --env HUGGING_FACE_HUB_TOKEN=$HF_READ_TOKEN \
     ghcr.io/huggingface/text-generation-inference:sha-5dad0c0-rocm \
     --model-id meta-llama/Meta-Llama-3-8B-Instruct \
@@ -82,12 +83,18 @@ config.json [00:00:00] [██████████████████�
 2024-05-07T12:39:22.141574Z  INFO text_generation_router: router/src/main.rs:355: Connected
 2024-05-07T12:39:22.141577Z  WARN text_generation_router: router/src/main.rs:369: Invalid hostname, defaulting to 0.0.0.0
 ```
-After confirming output similar to above dettach from the Docker container using the follow escape key sequence:
-  - `<Ctrl+p><Ctrl+q>`
-  - That is, Control P followed directly by Control Q
 
-Now run another Docker container for Jupyter Notebook:
-  - Replace `<your-name>` in the command below with your name to help identify your Docker container.
+
+Now, in an other terminal, ssh again into the VM **with your individual TGI, jupyter & gradio ports**:
+```
+ssh \
+    -L <300#>:localhost:<300#>
+    -L <888#>:localhost:<888#> \
+    -L <786#>:localhost:<786#> \
+    buildusere@<azure-vm-ip-address>
+```
+
+Then, from within the VM, launch the jupyter container as follow, replacing `<your-name>` in the command below with your name to help identify your Docker container:
 ```
 docker run -it -u root --rm --entrypoint /bin/bash --net host --env HUGGING_FACE_HUB_TOKEN=$HF_READ_TOKEN --name <your-name>_jnb jupyter/base-notebook
 ```
