@@ -189,11 +189,11 @@ TGI can be used with quantized models (GPTQ, AWQ) with the option `--quantize gp
 
 Example, adding to the docker command:
 ```
---model-id TheBloke/Llama-2-70B-Chat-GPTQ --quantize gptq
+text-generation-launcher --model-id TheBloke/Llama-2-70B-Chat-GPTQ --quantize gptq --port #####
 ```
 or
 ```
---model-id casperhansen/llama-3-70b-instruct-awq --quantize awq
+text-generation-launcher --model-id casperhansen/llama-3-70b-instruct-awq --quantize awq  --port #####
 ```
 
 ## Tensor parallelism
@@ -210,12 +210,12 @@ In the launcher, the argument `--speculate X` allows to use speculative decoding
 
 Example, adding to the docker command:
 ```
---model-id mistralai/Mistral-7B-Instruct-v0.2 --speculate 3
+text-generation-launcher --model-id mistralai/Mistral-7B-Instruct-v0.2 --speculate 3 --port #####
 ```
 or with Medusa:
 
 ```
---model-id text-generation-inference/Mistral-7B-Instruct-v0.2-medusa --speculate 3
+text-generation-launcher --model-id text-generation-inference/Mistral-7B-Instruct-v0.2-medusa --speculate 3  --port #####
 ```
 (see its config: https://huggingface.co/text-generation-inference/Mistral-7B-Instruct-v0.2-medusa/blob/main/config.json)
 
