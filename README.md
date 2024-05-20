@@ -110,9 +110,9 @@ You should see output that ends with something similar to:
         http://127.0.0.1:8882/tree?token=9cffeac33839ab1e89e81f57dfe3be1739f4fd98729da0ad
 ```
 
-Now `local_chatbot.ipynb` can be used to query the model from your system through the SSH tunnel!  To do so, direct your browser to:
+Now `local_chatbot.ipynb` can be used to query the model from your system through the SSH tunnel!  To do so...
   - Just copy and paste the provided URL into your browser (see ouput from Notebooks server)
-  - trhe format of the URL is as such: `http://127.0.0.1:####/tree?token=<unique-value-from-output>`
+  - The format of the URL is as such: `http://127.0.0.1:####/tree?token=<unique-value-from-output>`
 
 # Options to try
 
