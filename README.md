@@ -34,7 +34,7 @@ From within the VM, please use the following Docker run command while taking not
 ```
 docker run --name <your-name>_tgi --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
     --device=/dev/kfd --device=/dev/dri/renderD### --group-add video --ipc=host --shm-size 256g \
-    --net host -v $(pwd)/hf_cache:/data \
+    --net host -v $(pwd)/hf/hf_cache:/data \
     --env HUGGING_FACE_HUB_TOKEN=$HF_READ_TOKEN \
     ghcr.io/huggingface/text-generation-inference:sha-5dad0c0-rocm \
     --model-id meta-llama/Meta-Llama-3-8B-Instruct \
