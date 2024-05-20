@@ -29,13 +29,15 @@ ssh \
 * `888x`: jupyter notebook port.
 * `786x`: gradio port.
 
-From within the VM, please use the following Docker run command while taking note to replace the following placeholders according to your printout:
-  - Replace `###` in `--device=/dev/dri/renderD###`
-  - Replace `####` in `--port ####` (should be one of 3001, 3002, ..., 3008)
-  - Replace `<your-name>` in `--name <your-name>_tgi` to help identify your Docker container
+From within the VM, please use the following Docker run command while taking note to first set the following variables according to your printout:
+  - For `--device=/dev/dri/renderD###` set `GPUID`
+  - For `--port ####` set `TGIPORT` (should be one of 3001, 3002, ..., 3008)
+  - For `--name <your-name>_tgi` set `NAME` to help identify your Docker container
 ```
-docker run --name <your-name>_tgi --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
-    --device=/dev/kfd --device=/dev/dri/renderD### --group-add video --ipc=host --shm-size 256g \
+GPUID=###
+NAME=your_name
+docker run --name ${NAME}_tgi --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
+    --device=/dev/kfd --device=/dev/dri/renderD$GPUID --group-add video --ipc=host --shm-size 256g \
     --net host -v $(pwd)/hf/hf_cache:/data \
     --entrypoint "/bin/bash" \
     --env PYTORCH_TUNABLEOP_ENABLED=0 \
@@ -126,10 +128,12 @@ ssh \
 ```
 
 Then, from within the VM, launch the jupyter container as follow, replacing `<your-name>` in the command below with your name to help identify your Docker container:
+  - The NAME variable will once again be used to help identify your Docker container.
 ```
+NAME=your_name
 docker run -it -u root --rm --entrypoint /bin/bash --net host \
     --env HUGGING_FACE_HUB_TOKEN=$HF_READ_TOKEN \
-    --name <your-name>_jnb \
+    --name ${NAME}_jnb \
     jupyter/base-notebook
 ```
 
