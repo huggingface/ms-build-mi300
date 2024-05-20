@@ -10,7 +10,7 @@
         [6. Grammar contrained generation](#grammar-contrained-generation)
         [7. Benchmarking](#benchmarking)
         [8. Vision-Language models (VLM)](#vision-language-models-vlm)
-[2. Model fine-tuning](#model-fine-tuning)
+[2. Model fine-tuning](#model-fine-tuning-with-transformers-and-peft)
 
 # Deploying TGI on the VM
 
