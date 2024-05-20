@@ -116,7 +116,7 @@ Read more about tensor parallelism in TGI: https://huggingface.co/docs/text-gene
 
 ## Speculative decoding
 
-TGI supports **n-gram** specumation, as well as [**Medusa**](https://arxiv.org/pdf/2401.10774) speculative decoding.
+TGI supports **n-gram** speculation, as well as [**Medusa**](https://arxiv.org/pdf/2401.10774) speculative decoding.
 
 In the launcher, the argument `--speculate X` allows to use speculative decoding. This argument specifies the number of input_ids to speculate on if using a medusa model, or using n-gram speculation.
 
