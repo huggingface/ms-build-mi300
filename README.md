@@ -286,5 +286,5 @@ apt update && apt install libaio-dev -y
 ```
 and then:
 ```
-HF_CACHE="/data" accelerate launch --config_file deepspeed_zero3.yml peft_fine_tuning.py
+HF_CACHE="/data" accelerate launch --config_file deepspeed_zero3.yaml peft_fine_tuning.py
 ```
