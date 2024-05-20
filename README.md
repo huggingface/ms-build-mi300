@@ -17,12 +17,14 @@
 Access the VM through SSH using any terminal application on your system.
  - IMPORTANT: Replace `<placeholders>` in the command according to printed setup instructions.
 ```
-ssh -L <300#>:localhost:<300#> -L <888#>:localhost:<888#> -L <786#>:localhost:<786#> buildusere@<azure-vm-ip-address>
+ssh \
+    -L <300#>:localhost:<300#>
+    -L <888#>:localhost:<888#> \
+    -L <786#>:localhost:<786#> \
+    buildusere@<azure-vm-ip-address>
 ```
 
-**Ports.**
-
-We use three different ports:
+**Important: there are three ports to forward through ssh:**
 * `300x`: TGI port.
 * `888x`: jupyter notebook port.
 * `786x`: gradio port.
