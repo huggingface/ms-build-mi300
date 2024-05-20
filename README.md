@@ -27,7 +27,7 @@ docker run --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
     --device=/dev/kfd --device=/dev/dri --group-add video --ipc=host --shm-size 256g \
     --net host -v $(pwd)/hf_cache:/data \
     -e HUGGING_FACE_HUB_TOKEN=$HF_READ_TOKEN \
-    ghcr.io/huggingface/text-generation-inference:sha-5dad0c0-rocm \
+    ghcr.io/huggingface/text-generation-inference:sha-293b8125-rocm \
     --model-id meta-llama/Meta-Llama-3-8B-Instruct \
     --num-shard 1 --port 8081
 ```
@@ -268,9 +268,19 @@ text-generation-benchmark --tokenizer-name meta-llama/Meta-Llama-3-8B-Instruct -
 Refer to: https://huggingface.co/docs/text-generation-inference/basic_tutorials/visual_language_models
 
 
-# Model fine-tuning
+# Model fine-tuning with Transformers and PEFT
+
+Run TGI's container in interactive model, adding the following to `docker run`:
+```
+--entrypoint "/bin/bash" -v $(pwd)/ms-build-mi300:/ms-build-mi300
+```
 
 Please run:
 ```
-accelerate run test_peft.py
+pip install datasets==2.19.1 deepspeed==0.14.2 transformers==4.40.2 peft==0.10.0
+apt update && apt install libaio-dev -y
+```
+and then:
+```
+HF_CACHE="/data" accelerate launch --config_file deepspeed_zero3.yml peft_fine_tuning.py
 ```
