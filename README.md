@@ -1,16 +1,16 @@
 # Table of content
 
 1. [Deploying TGI on the VM](#deploying-tgi-on-the-vm)
-    1. [Options to try](#options-to-try)
+	1. [Options to try](#options-to-try)
         1. [Quantization](#quantization)
         2. [Tensor parallelism](#tensor-parallelism)
         3. [Speculative decoding](#speculative-decoding)
         4. [Customize HIP Graph, TunableOp warmup](#customize-hip-graph-tunableop-warmup)
         5. [Deploy several models on a single GPU](#deploy-several-models-on-a-single-gpu)
-        6. [Vision-Language models (VLM)](#vision-language-models-vlm)
-        7. [Grammar contrained generation](#grammar-contrained-generation)
-        8. [Benchmarking](#benchmarking)
-2. [Model fine-tuning](#model-fine-tuning)
+        6. [Grammar contrained generation](#grammar-contrained-generation)
+        7. [Benchmarking](#benchmarking)
+        8. [Vision-Language models (VLM)](#vision-language-models-vlm)
+2. [Model fine-tuning](#model-fine-tuning-with-transformers-and-peft)
 
 # Deploying TGI on the VM
 
@@ -150,7 +150,7 @@ Read more about tensor parallelism in TGI: https://huggingface.co/docs/text-gene
 
 ## Speculative decoding
 
-TGI supports **n-gram** specumation, as well as [**Medusa**](https://arxiv.org/pdf/2401.10774) speculative decoding.
+TGI supports **n-gram** speculation, as well as [**Medusa**](https://arxiv.org/pdf/2401.10774) speculative decoding.
 
 In the launcher, the argument `--speculate X` allows to use speculative decoding. This argument specifies the number of input_ids to speculate on if using a medusa model, or using n-gram speculation.
 
@@ -301,9 +301,24 @@ text-generation-benchmark --tokenizer-name meta-llama/Meta-Llama-3-8B-Instruct -
 |         | 16         | 743.16 tokens/secs  | 626.60 tokens/secs | 844.79 tokens/secs  |
 |         | 32         | 1164.14 tokens/secs | 955.98 tokens/secs | 1306.47 tokens/secs |
 
-# Model fine-tuning
+## Vision-Language models (VLM)
+
+Refer to: https://huggingface.co/docs/text-generation-inference/basic_tutorials/visual_language_models
+
+
+# Model fine-tuning with Transformers and PEFT
+
+Run TGI's container in interactive model, adding the following to `docker run`:
+```
+--entrypoint "/bin/bash" -v $(pwd)/ms-build-mi300:/ms-build-mi300
+```
 
 Please run:
 ```
-accelerate run test_peft.py
+pip install datasets==2.19.1 deepspeed==0.14.2 transformers==4.40.2 peft==0.10.0
+apt update && apt install libaio-dev -y
+```
+and then:
+```
+HF_CACHE="/data" accelerate launch --config_file deepspeed_zero3.yaml peft_fine_tuning.py
 ```
