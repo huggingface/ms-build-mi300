@@ -62,7 +62,9 @@ Device  Node  IDs              Temp        Power     Partitions          SCLK   
 
 Then, from within the container in interactive mode, TGI can be launched with:
 ```
-text-generation-launcher --model-id meta-llama/Meta-Llama-3-8B-Instruct --num-shard 1 --port ####
+text-generation-launcher \
+    --model-id meta-llama/Meta-Llama-3-8B-Instruct \
+    --num-shard 1 --port ####
 ```
 
 with **the port being the one indicated on your individual instruction sheet**.
@@ -125,7 +127,10 @@ ssh \
 
 Then, from within the VM, launch the jupyter container as follow, replacing `<your-name>` in the command below with your name to help identify your Docker container:
 ```
-docker run -it -u root --rm --entrypoint /bin/bash --net host --env HUGGING_FACE_HUB_TOKEN=$HF_READ_TOKEN --name <your-name>_jnb jupyter/base-notebook
+docker run -it -u root --rm --entrypoint /bin/bash --net host \
+    --env HUGGING_FACE_HUB_TOKEN=$HF_READ_TOKEN \
+    --name <your-name>_jnb \
+    jupyter/base-notebook
 ```
 
 Once inside this 2nd Docker container clone the repo for this workshop
