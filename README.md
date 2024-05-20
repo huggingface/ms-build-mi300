@@ -17,12 +17,19 @@
 Access the VM through SSH using any terminal application on your system.
  - IMPORTANT: Replace `<placeholders>` in the command according to printed setup instructions.
 ```
-ssh -L <300#>:localhost:<300#> -L <888#>:localhost:<888#> buildusere@<azure-vm-ip-address>
+ssh -L <300#>:localhost:<300#> -L <888#>:localhost:<888#> -L <786#>:localhost:<786#> buildusere@<azure-vm-ip-address>
 ```
+
+**Ports.**
+
+We use three different ports:
+* `300x`: TGI port.
+* `888x`: jupyter notebook port.
+* `786x`: gradio port.
 
 From within the VM, please use the following Docker run command while taking note to replace the following placeholders according to your printout:
   - Replace `###` in `--device=/dev/dri/renderD###`
-  - Replace `####` in `--port ####`
+  - Replace `####` in `--port ####` (should be one of 3001, 3002, ..., 3008)
   - Replace `<your-name>` in `--name <your-name>_tgi` to help identify your Docker container
 ```
 docker run --name <your-name>_tgi --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
@@ -90,10 +97,10 @@ apt install git
 git clone https://github.com/huggingface/ms-build-mi300.git
 ```
 
-Finally, launch the Notebooks server while taking note to replace the `####` placeholder according to your printout.
+Finally, launch the Notebooks server while taking note to replace the `<888#>` placeholder according to your printout (should be one of 8881, 8882, ..., 8888).
   - Take note of the URL supplied so can connect to Notebooks after.
 ```
-jupyter-notebook --allow-root --port ####
+jupyter-notebook --allow-root --port <888#>
 ```
 
 You should see output that ends with something similar to:
