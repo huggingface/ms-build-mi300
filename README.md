@@ -1,16 +1,16 @@
 # Table of content
 
-[1. Deploying TGI on the VM](#deploying-tgi-on-the-vm)
-	[1. Options to try](#options-to-try)
-        [1. Quantization](#quantization)
-        [2. Tensor parallelism](#tensor-parallelism)
-        [3. Speculative decoding](#speculative-decoding)
-        [4. Customize HIP Graph, TunableOp warmup](#customize-hip-graph-tunableop-warmup)
-        [5. Deploy several models on a single GPU](#deploy-several-models-on-a-single-gpu)
-        [6. Grammar contrained generation](#grammar-contrained-generation)
-        [7. Benchmarking](#benchmarking)
-        [8. Vision-Language models (VLM)](#vision-language-models-vlm)
-[2. Model fine-tuning](#model-fine-tuning-with-transformers-and-peft)
+1. [Deploying TGI on the VM](#deploying-tgi-on-the-vm)
+	1. [Options to try](#options-to-try)
+        1. [Quantization](#quantization)
+        2. [Tensor parallelism](#tensor-parallelism)
+        3. [Speculative decoding](#speculative-decoding)
+        4. [Customize HIP Graph, TunableOp warmup](#customize-hip-graph-tunableop-warmup)
+        5. [Deploy several models on a single GPU](#deploy-several-models-on-a-single-gpu)
+        6. [Grammar contrained generation](#grammar-contrained-generation)
+        7. [Benchmarking](#benchmarking)
+        8. [Vision-Language models (VLM)](#vision-language-models-vlm)
+2. [Model fine-tuning](#model-fine-tuning-with-transformers-and-peft)
 
 # Deploying TGI on the VM
 
