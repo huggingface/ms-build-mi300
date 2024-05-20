@@ -18,7 +18,7 @@ Access the VM through SSH using any terminal application on your system.
  - IMPORTANT: Replace `<placeholders>` in the command according to printed setup instructions.
 ```
 ssh \
-    -L <300#>:localhost:<300#>
+    -L <300#>:localhost:<300#> \
     -L <888#>:localhost:<888#> \
     -L <786#>:localhost:<786#> \
     buildusere@<azure-vm-ip-address>
@@ -120,7 +120,7 @@ You should see a log as follow:
 Now, in an other terminal, ssh again into the VM **with your individual TGI, jupyter & gradio ports**:
 ```
 ssh \
-    -L <300#>:localhost:<300#>
+    -L <300#>:localhost:<300#> \
     -L <888#>:localhost:<888#> \
     -L <786#>:localhost:<786#> \
     buildusere@<azure-vm-ip-address>
