@@ -14,22 +14,23 @@
 
 # Deploying TGI on the VM
 
-Access to the VM as:
-
+Access the VM through SSH using any terminal application on your system.
+ - IMPORTANT: Replace `<placeholders>` in the command according to printed setup instructions.
 ```
-ssh -L 8081:localhost:80 your_name@azure-mi300-vm
+ssh -L <300#>:localhost:<300#> -L <888#>:localhost:<888#> buildusere@<azure-vm-ip-address>
 ```
 
-From within the VM, please run:
-
+From within the VM, please use the following Docker run command while taking note to replace the following placeholders according to your printout:
+  - Replace `###` in `--device=/dev/dri/renderD###`
+  - Replace `####` in `--port ####`
+  - Replace `<your-name>` in `--name <your-name>_tgi` to help identify your Docker container
 ```
-docker run --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
-    --device=/dev/kfd --device=/dev/dri --group-add video --ipc=host --shm-size 256g \
+docker run --name <your-name>_tgi --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
+    --device=/dev/kfd --device=/dev/dri/renderD### --group-add video --ipc=host --shm-size 256g \
     --net host -v $(pwd)/hf_cache:/data \
-    -e HUGGING_FACE_HUB_TOKEN=$HF_READ_TOKEN \
-    ghcr.io/huggingface/text-generation-inference:sha-293b8125-rocm \
+    ghcr.io/huggingface/text-generation-inference:sha-5dad0c0-rocm \
     --model-id meta-llama/Meta-Llama-3-8B-Instruct \
-    --num-shard 1 --port 8081
+    --num-shard 1 --port ####
 ```
 
 You should see a log as follow:
@@ -71,14 +72,47 @@ config.json [00:00:00] [██████████████████�
 2024-05-07T12:39:22.141574Z  INFO text_generation_router: router/src/main.rs:355: Connected
 2024-05-07T12:39:22.141577Z  WARN text_generation_router: router/src/main.rs:369: Invalid hostname, defaulting to 0.0.0.0
 ```
+After confirming output similar to above dettach from the Docker container using the follow escape key sequence:
+  - `<Ctrl+p><Ctrl+q>`
+  - That is, Control P followed directly by Control Q
 
-Locally on the laptop, install jupyter notebook and launch Jupyter Notebook:
+Now run another Docker container for Jupyter Notebook:
+  - Replace `<your-name>` in the command below with your name to help identify your Docker container.
 ```
-pip install -U notebook
-jupyter-notebook
+docker run -it -u root --rm --entrypoint /bin/bash --net host jupyter/base-notebook --name <your-name>_jnb
 ```
 
-And `local_chatbot.ipynb` can be used to query the model on your desktop through the SSH tunnel!
+Once inside this 2nd Docker container clone the repo for this workshop
+```
+apt update
+apt install git
+git clone https://github.com/huggingface/ms-build-mi300.git
+```
+
+Finally, launch the Notebooks server while taking note to replace the `####` placeholder according to your printout.
+  - Take note of the URL supplied so can connect to Notebooks after.
+```
+jupyter-notebook --allow-root --port ####
+```
+
+You should see output that ends with something similar to:
+```
+[I 2024-05-19 00:38:53.523 ServerApp] Jupyter Server 2.8.0 is running at:
+[I 2024-05-19 00:38:53.523 ServerApp] http://build-mi300x-vm1:8882/tree?token=9cffeac33839ab1e89e81f57dfe3be1739f4fd98729da0ad
+[I 2024-05-19 00:38:53.523 ServerApp]     http://127.0.0.1:8882/tree?token=9cffeac33839ab1e89e81f57dfe3be1739f4fd98729da0ad
+[I 2024-05-19 00:38:53.523 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[C 2024-05-19 00:38:53.525 ServerApp] 
+    
+    To access the server, open this file in a browser:
+        file:///home/jovyan/.local/share/jupyter/runtime/jpserver-121-open.html
+    Or copy and paste one of these URLs:
+        http://build-mi300x-vm1:8882/tree?token=9cffeac33839ab1e89e81f57dfe3be1739f4fd98729da0ad
+        http://127.0.0.1:8882/tree?token=9cffeac33839ab1e89e81f57dfe3be1739f4fd98729da0ad
+```
+
+Now `local_chatbot.ipynb` can be used to query the model from your system through the SSH tunnel!  To do so...
+  - Just copy and paste the provided URL into your browser (see ouput from Notebooks server)
+  - The format of the URL is as such: `http://127.0.0.1:####/tree?token=<unique-value-from-output>`
 
 # Options to try
 
@@ -116,7 +150,7 @@ Read more about tensor parallelism in TGI: https://huggingface.co/docs/text-gene
 
 ## Speculative decoding
 
-TGI supports **n-gram** specumation, as well as [**Medusa**](https://arxiv.org/pdf/2401.10774) speculative decoding.
+TGI supports **n-gram** speculation, as well as [**Medusa**](https://arxiv.org/pdf/2401.10774) speculative decoding.
 
 In the launcher, the argument `--speculate X` allows to use speculative decoding. This argument specifies the number of input_ids to speculate on if using a medusa model, or using n-gram speculation.
 
